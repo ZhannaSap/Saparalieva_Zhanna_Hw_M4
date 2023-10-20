@@ -36,13 +36,14 @@
 
     <TextView
         android:id="@+id/tv_desc"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="Удобный инструмент для управления задачами и повышения производительности/"
+        android:layout_marginEnd="16dp"
+        android:text="Удобный инструмент для управления задачами и повышения производительности"
         android:textColor="@color/black"
-        android:textSize="12sp"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_title" />
