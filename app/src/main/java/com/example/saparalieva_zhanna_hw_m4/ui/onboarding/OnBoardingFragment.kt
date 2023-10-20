@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.example.saparalieva_zhanna_hw_m4.R
+import com.example.saparalieva_zhanna_hw_m4.data.local.Pref
 import com.example.saparalieva_zhanna_hw_m4.databinding.FragmentOnBoardingBinding
 import com.example.saparalieva_zhanna_hw_m4.databinding.FragmentProfileBinding
 import com.example.saparalieva_zhanna_hw_m4.ui.onboarding.adapter.OnBoardingAdapter
@@ -21,8 +22,14 @@ class OnBoardingFragment : Fragment() {
 
     private val adapter = OnBoardingAdapter(this::onClick)
 
+    private  val  pref by lazy {
+        Pref(requireContext())
+    }
+
     private fun onClick() {
+        pref.onShowed()
         findNavController().navigateUp()
+
     }
 
     override fun onCreateView(
