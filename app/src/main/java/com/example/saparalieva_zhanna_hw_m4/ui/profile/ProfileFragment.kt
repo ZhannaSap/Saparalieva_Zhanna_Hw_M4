@@ -1,6 +1,7 @@
 package com.example.saparalieva_zhanna_hw_m4.ui.profile
 
 import android.app.Activity
+import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -14,13 +15,14 @@ import com.example.saparalieva_zhanna_hw_m4.data.local.Pref
 import com.example.saparalieva_zhanna_hw_m4.databinding.FragmentProfileBinding
 import java.io.ByteArrayOutputStream
 import android.util.Base64
+import androidx.activity.result.contract.ActivityResultContracts
 import com.example.saparalieva_zhanna_hw_m4.utils.loadImage
+import kotlinx.coroutines.selects.select
 
 
 class ProfileFragment : Fragment() {
-    private val GALLARY_REQUEST_CODE = 1001
-  private lateinit var binding: FragmentProfileBinding
-    private  val  pref by lazy {
+    private lateinit var binding: FragmentProfileBinding
+    private val pref by lazy {
         Pref(requireContext())
     }
 
@@ -28,53 +30,35 @@ class ProfileFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentProfileBinding.inflate(inflater, container,false)
+        binding = FragmentProfileBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        binding.profileImage.setOnClickListener{
-            val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-            startActivityForResult(intent,GALLARY_REQUEST_CODE)
+    private val openGallery =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == RESULT_OK) {
+                val selectedImageUri = it.data?.data
+                pref.saveImage(selectedImageUri.toString())
+                binding.profileImage.loadImage(selectedImageUri.toString())
+            }
         }
 
-        val encodedImage = pref.getImage()
-        if (encodedImage != null) {
-            val bitmap = toBitmap(encodedImage)
-            binding.profileImage.setImageBitmap(bitmap)
-        }
-        
-        
-        binding.btnSave.setOnClickListener{
-        pref.saveName(binding.etName.text.toString())
-        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.profileImage.loadImage(pref.getImage())
         binding.etName.setText(pref.getName())
 
 
-    }
-
-    private fun toBitmap(encodedImage: String): Bitmap? {
-        val decodedByteArray = Base64.decode(encodedImage, Base64.DEFAULT)
-        return BitmapFactory.decodeByteArray(decodedByteArray, 0, decodedByteArray.size)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode==GALLARY_REQUEST_CODE && resultCode==Activity.RESULT_OK){
-            val selectedImage = data?.data
-            val bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, selectedImage)
-
-            val encodedImage = toBase64(bitmap)
-            pref.saveImage(encodedImage)
-            binding.profileImage.setImageBitmap(bitmap)
+        binding.profileImage.setOnClickListener {
+            val intent = Intent(Intent.ACTION_PICK)
+            intent.setType("image/*")
+            openGallery.launch(intent)
         }
-    }
 
-    private fun toBase64(bitmap: Bitmap): String {
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100,byteArrayOutputStream)
-        val byteArray= byteArrayOutputStream.toByteArray()
-        return Base64.encodeToString(byteArray, Base64.DEFAULT)
+
+        binding.btnSave.setOnClickListener {
+            pref.saveName(binding.etName.text.toString())
+        }
+
     }
 }
