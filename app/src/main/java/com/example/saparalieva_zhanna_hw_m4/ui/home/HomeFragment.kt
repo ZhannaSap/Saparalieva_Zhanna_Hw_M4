@@ -33,7 +33,7 @@ class HomeFragment : Fragment() {
     private fun onClick(task: Task) {
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("Удалить")
-        builder.setMessage("Вы хотите удалить эту заметку?")
+        builder.setMessage("Вы точно хотите удалить эту заметку?")
         builder.setNegativeButton("Нет"){dialog, i ->
             findNavController().navigateUp()
         }
