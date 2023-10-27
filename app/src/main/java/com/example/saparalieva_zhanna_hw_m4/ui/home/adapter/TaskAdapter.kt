@@ -1,17 +1,23 @@
 package com.example.saparalieva_zhanna_hw_m4.ui.home.adapter
 
+import android.app.AlertDialog
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.example.saparalieva_zhanna_hw_m4.App
 import com.example.saparalieva_zhanna_hw_m4.databinding.ItemTaskBinding
 import com.example.saparalieva_zhanna_hw_m4.model.Task
+import com.example.saparalieva_zhanna_hw_m4.ui.home.HomeFragment
+import java.text.ParsePosition
 
-class TaskAdapter : Adapter<TaskAdapter.TaskViewHolder>() {
+class TaskAdapter ( val onClick: (task:Task)->Unit): Adapter<TaskAdapter.TaskViewHolder>() {
     private val list = arrayListOf<Task>()
 
-    fun addTask(task:Task){
-        list.add(0,task)
+    fun addTasks(tasks:List<Task>){
+        list.clear()
+        list.addAll(tasks)
         notifyDataSetChanged()
     }
 
@@ -35,8 +41,13 @@ class TaskAdapter : Adapter<TaskAdapter.TaskViewHolder>() {
 
     inner class TaskViewHolder(private val binding: ItemTaskBinding) : ViewHolder(binding.root) {
         fun bind(task: Task) {
+            itemView.setOnLongClickListener(View.OnLongClickListener {
+                onClick(task)
+                true
+            })
             binding.tvTitle.text = task.title
             binding.tvDesc.text = task.desc
         }
+
     }
 }
